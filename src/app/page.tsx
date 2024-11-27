@@ -1,74 +1,165 @@
-import Image from 'next/image'
-import Link from 'next/link'
+'use client';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useCart, Product } from '@/context/CartContext';
+
+const featuredProducts: Product[] = [
+  {
+    id: 1,
+    name: 'Bomba DAB Europro 50 M',
+    price: 299.99,
+    image: '/images/bomba-dab-europro-50-m.jpg',
+    category: 'Equipamiento',
+    description: 'Bomba de alto rendimiento para piscinas'
+  },
+  {
+    id: 2,
+    name: 'Llave de Ajuste Toro Precision',
+    price: 24.99,
+    image: '/images/llave-ajuste-boquilla-riego-toro-precision-rotating.jpg',
+    category: 'Herramientas',
+    description: 'Llave de ajuste profesional'
+  },
+  {
+    id: 3,
+    name: 'Bromo en Pastillas Quimicamp',
+    price: 39.99,
+    image: '/images/bromo-pastillas-quimicamp-1kg.jpg',
+    category: 'Químicos',
+    description: 'Pastillas de bromo de 1kg'
+  }
+];
+
+const heroImages = [
+  '/images/hero1.jpeg',
+  '/images/hero2.jpeg',
+  '/images/hero3.jpeg',
+  '/images/hero4.jpeg',
+  '/images/hero5.jpeg'
+];
 
 export default function Home() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const router = useRouter();
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-8">
+    <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="w-full max-w-7xl mx-auto text-center mb-16">
-        <h1 className="text-5xl font-bold mb-6">Bienvenido a Pool Paradise</h1>
-        <p className="text-xl mb-8">Todo lo que necesitas para tu piscina en un solo lugar</p>
-        <Link 
-          href="/productos" 
-          className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Ver Productos
-        </Link>
-      </section>
-
-      {/* Featured Categories */}
-      <section className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        {[
-          {
-            title: 'Químicos',
-            image: '/images/chemicals.jpg',
-            description: 'Mantén tu piscina limpia y segura'
-          },
-          {
-            title: 'Equipamiento',
-            image: '/images/equipment.jpg',
-            description: 'Bombas, filtros y más'
-          },
-          {
-            title: 'Accesorios',
-            image: '/images/accessories.jpg',
-            description: 'Todo para disfrutar al máximo'
-          }
-        ].map((category, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src={category.image}
-                alt={category.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">{category.title}</h3>
-              <p className="text-gray-600">{category.description}</p>
-            </div>
-          </div>
+      <div className="relative h-[80vh] overflow-hidden">
+        {heroImages.map((image, index) => (
+          <motion.div
+            key={image}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: index === currentImageIndex ? 1 : 0 }}
+            transition={{ duration: 1 }}
+            className="absolute inset-0"
+          >
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${image})` }}
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-40" />
+          </motion.div>
         ))}
-      </section>
 
-      {/* Features Section */}
-      <section className="w-full max-w-7xl mx-auto bg-gray-50 rounded-xl p-8 mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">Envío Gratis</h3>
-            <p className="text-gray-600">En pedidos superiores a 100€</p>
+        <div className="absolute inset-0 flex items-center justify-center text-center">
+          <div className="max-w-4xl mx-auto px-4">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-8xl font-bold text-white mb-8"
+            >
+              Pool Paradise
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="text-4xl text-white mb-12"
+            >
+              Todo lo que necesitas para tu piscina en un solo lugar
+            </motion.p>
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              onClick={() => router.push('/productos')}
+              className="bg-blue-500 text-white text-3xl font-semibold px-12 py-6 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Ver productos
+            </motion.button>
           </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">Asesoramiento</h3>
-            <p className="text-gray-600">Expertos a tu disposición</p>
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">Garantía</h3>
-            <p className="text-gray-600">Satisfacción garantizada</p>
+        </div>
+      </div>
+
+      {/* Featured Products */}
+      <section className="py-24 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-6xl font-bold text-center mb-16">Productos Destacados</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {featuredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden"
+              >
+                <div
+                  className="h-64 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${product.image})` }}
+                />
+                <div className="p-8">
+                  <h3 className="text-4xl font-semibold mb-4">{product.name}</h3>
+                  <p className="text-2xl text-gray-600 mb-6">{product.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-3xl font-bold text-blue-600">
+                      €{product.price.toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="bg-blue-500 text-white text-2xl px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      Añadir al carrito
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Call to Action */}
+      <section className="py-24 px-4 bg-blue-500">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <h2 className="text-6xl font-bold mb-8">¿Listo para empezar?</h2>
+          <p className="text-3xl mb-12">
+            Descubre nuestra amplia selección de productos para piscinas
+          </p>
+          <button
+            onClick={() => router.push('/productos')}
+            className="bg-white text-blue-500 text-3xl font-semibold px-12 py-6 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            Explorar catálogo
+          </button>
+        </div>
+      </section>
     </main>
-  )
+  );
 }

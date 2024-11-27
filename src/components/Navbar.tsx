@@ -1,86 +1,119 @@
 'use client';
-import Link from 'next/link';
 import { useState } from 'react';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { Menu, ShoppingCart, X } from 'lucide-react';
+import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { items } = useCart();
+
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-blue-600">Pool Paradise</span>
-            </Link>
-          </div>
+    <nav className="bg-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center h-24">
+          {/* Logo */}
+          <Link href="/" className="text-5xl font-bold text-blue-600">
+            Pool Paradise
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden sm:flex sm:items-center sm:space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="text-3xl text-gray-700 hover:text-blue-600">
               Inicio
             </Link>
-            <Link href="/productos" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">
+            <Link href="/productos" className="text-3xl text-gray-700 hover:text-blue-600">
               Productos
             </Link>
-            <Link href="/contacto" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">
+            <Link href="/contacto" className="text-3xl text-gray-700 hover:text-blue-600">
               Contacto
             </Link>
-            <button className="flex items-center text-gray-700 hover:text-blue-600">
-              <ShoppingCart className="h-6 w-6" />
-              <span className="ml-2">Carrito (0)</span>
-            </button>
+            <Link 
+              href="/carrito" 
+              className="relative text-3xl text-gray-700 hover:text-blue-600"
+            >
+              <ShoppingCart className="h-10 w-10" />
+              {totalItems > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-3 -right-3 bg-blue-500 text-white text-xl rounded-full h-8 w-8 flex items-center justify-center"
+                >
+                  {totalItems}
+                </motion.span>
+              )}
+            </Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="sm:hidden flex items-center">
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <Link 
+              href="/carrito" 
+              className="relative mr-4"
+            >
+              <ShoppingCart className="h-10 w-10" />
+              {totalItems > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-3 -right-3 bg-blue-500 text-white text-xl rounded-full h-8 w-8 flex items-center justify-center"
+                >
+                  {totalItems}
+                </motion.span>
+              )}
+            </Link>
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 hover:text-blue-600"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
+              {isOpen ? (
+                <X className="h-10 w-10" />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className="h-10 w-10" />
               )}
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="sm:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link
-              href="/"
-              className="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-              onClick={() => setIsMenuOpen(false)}
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-white border-t"
             >
-              Inicio
-            </Link>
-            <Link
-              href="/productos"
-              className="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Productos
-            </Link>
-            <Link
-              href="/contacto"
-              className="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contacto
-            </Link>
-            <button className="flex items-center text-gray-700 hover:text-blue-600 px-3 py-2">
-              <ShoppingCart className="h-6 w-6" />
-              <span className="ml-2">Carrito (0)</span>
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="px-4 py-6 space-y-4">
+                <Link
+                  href="/"
+                  className="block text-3xl text-gray-700 hover:text-blue-600"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Inicio
+                </Link>
+                <Link
+                  href="/productos"
+                  className="block text-3xl text-gray-700 hover:text-blue-600"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Productos
+                </Link>
+                <Link
+                  href="/contacto"
+                  className="block text-3xl text-gray-700 hover:text-blue-600"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Contacto
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </nav>
   );
 }
